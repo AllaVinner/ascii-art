@@ -1,6 +1,11 @@
 use image::{DynamicImage, Rgba};
 use rusttype::{point, Font, Scale};
 
+fn min_max_normalize(v: Vec<f32>) -> Vec<f32> {
+    let max_val = v.iter().max_by(|a, b| a.total_cmp(b)).unwrap();
+    let min_val = v.iter().min_by(|a, b| a.total_cmp(b)).unwrap();
+    v.iter().map(|val| (val-min_val)/(max_val-min_val)).collect()
+}
 
 pub fn main()
 {
@@ -9,7 +14,7 @@ pub fn main()
     let font = Font::try_from_bytes(font_data as &[u8]).expect("Error constructing Font");
     let text = "This is RustType rendered into a png!";
     let scale = Scale::uniform(32.0);
-    let text = "T@his is RustType rendered into a png!";
+    let text = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';";
 
     let colour = (150, 0, 0);
 
@@ -20,49 +25,16 @@ pub fn main()
         .layout(text, scale, point(20.0, 20.0 + v_metrics.ascent))
         .collect();
 
-    // work out the layout size
-    let glyphs_height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
-    let glyphs_width = {
-        let min_x = glyphs
-            .first()
-            .map(|g| g.pixel_bounding_box().unwrap().min.x)
-            .unwrap();
-        let max_x = glyphs
-            .last()
-            .map(|g| g.pixel_bounding_box().unwrap().max.x)
-            .unwrap();
-        (max_x - min_x) as u32
-    };
-
-    // Create a new rgba image with some padding
-    let mut image = DynamicImage::new_rgba8(glyphs_width + 40, glyphs_height + 40).to_rgba8();
-
-    let areas: Vec<_> = glyphs.iter().zip(text.chars()).map(|(g, i)| {
-            match g.pixel_bounding_box() {
-                Some(bb) => (bb.max.x - bb.min.x+1) as u32 *(glyphs_height),
-                None => {println!("Got glyph wihout bounding box {:?}\n  {:?}", i, g); 
-                    0}
-            }
-        })
-        .collect();
-    println!("Areas {:?}", areas);   
-    println!("Num areas {:?}", areas.len()); 
-
-    let aa: Vec<_> = glyphs.iter().map(|g| {
-        let mut running_mean = 0.;
-        let mut counter = 0;
+    let mut acum_values: Vec<_> = glyphs.iter().map(|g| {
+        let mut accum_value = 0.;
         g.draw(|x, y, v| {
-            counter += 1;
-            running_mean += v;
+            accum_value += v;
         });
-        if counter == 0{
-            return 0.;
-        }
-        running_mean/counter as f32
+        accum_value
     }).collect();
-
-
-    println!("sdf {:?}", aa);
+    acum_values = min_max_normalize(acum_values);
+    acum_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    println!("acum_values {:?}", acum_values);
 
 }
 
