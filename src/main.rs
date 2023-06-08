@@ -24,7 +24,7 @@ fn main() {
     for (c,v) in font_info.characters.iter().zip(font_info.coverage.iter()) {
         println!("Char: {}, {}", c, v);
     }
-    let value_image = image_handler::get_value_image("images/at_wedding.jpg", 600, font_info.hight_width_ratio);
+    let value_image = image_handler::get_value_image("images/afgan_girl_altered_01.jpg", 2, font_info.hight_width_ratio);
     value_image.save("empty.jpg").unwrap();
     let mut s: String = "".to_string();
     for (i, p) in value_image.pixels().enumerate() {
