@@ -12,29 +12,24 @@ pub fn main()
     // Load the font
     let font_data = include_bytes!("../fonts/Courier_Prime/CourierPrime-Regular.ttf");
     let font = Font::try_from_bytes(font_data as &[u8]).expect("Error constructing Font");
-    let text = "This is RustType rendered into a png!";
-    let scale = Scale::uniform(32.0);
-    let text = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';";
-
-    let colour = (150, 0, 0);
-
-    let v_metrics = font.v_metrics(scale);
-
-    // layout the glyphs in a line with 20 pixels padding
-    let glyphs: Vec<_> = font
-        .layout(text, scale, point(20.0, 20.0 + v_metrics.ascent))
-        .collect();
-
-    let mut acum_values: Vec<_> = glyphs.iter().map(|g| {
+    let scale = Scale::uniform(10.0);
+    let origin = point(0.,0.);
+    let characters = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';";
+    let character_block_height = font.v_metrics(scale).ascent - font.v_metrics(scale).descent;
+    let character_block_width = font.glyph(characters.chars().next().unwrap()).scaled(scale).h_metrics().advance_width;
+    let character_bloc_area = character_block_height * character_block_width;
+    println!("Block widht {} height {}", character_block_width, character_block_height);
+    for c in characters.chars() {
         let mut accum_value = 0.;
-        g.draw(|x, y, v| {
-            accum_value += v;
-        });
-        accum_value
-    }).collect();
-    acum_values = min_max_normalize(acum_values);
-    acum_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    println!("acum_values {:?}", acum_values);
-
+        font.glyph(c).scaled(scale).positioned(origin).draw(|x, y, v|
+            {
+                accum_value += if v > 0.5 {
+                    1.
+                } else {
+                    0.
+                };
+            } );
+        println!("Character {} has a coverage of {}", c, accum_value/character_bloc_area);
+    }
 }
 
