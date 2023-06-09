@@ -12,12 +12,9 @@ pub fn get_value_image(image_path: &str, sub_image_height: u32, font_scale: f64)
 
     let window_width = (window_height/font_scale).floor() as f64;
     let num_columns = (image_width / window_width).floor() as f64;
-    println!("Test {}", num_columns);
-    println!("Test {}", image_width);
-    println!("Test {}", window_width);
 
-    println!("Num rows: {}", num_rows as u32);
-    println!("Num columns: {}", num_columns as u32);
+    println!("Number of ASCII rows: {}", num_rows as u32);
+    println!("Number of ASCII columns: {}", num_columns as u32);
     
     println!("Image height: {}", image_height as u32);
     println!("Image width: {}", image_width as u32);
@@ -33,7 +30,7 @@ pub fn get_value_image(image_path: &str, sub_image_height: u32, font_scale: f64)
             for p in sub_view.pixels() {
                 window_value += p.2.0[0] as f64;
             }           
-            let mut p = value_image.get_pixel_mut(coli as u32, rowi as u32);
+            let p = value_image.get_pixel_mut(coli as u32, rowi as u32);
             *p = Luma([((window_value / (window_height*window_width)).floor()) as u8]);
         }
 

@@ -33,12 +33,7 @@ pub fn get_font_info() -> FontInfo {
         font.glyph(c).scaled(scale).positioned(origin).draw(|x, y, v|
             {
                 accum_value += v as f64;
-                let aa = if v > 0.5 {
-                    1.
-                } else {
-                    0.
-                };
-            } );
+            });
         coverage.push(accum_value/character_bloc_area as f64);
         characters.push(c);
     }
