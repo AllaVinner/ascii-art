@@ -21,7 +21,7 @@ fn find_closest_match(pixel: f64, font_info: &FontInfo) -> char {
 fn main() {
     println!("Hello, world!");
     let font_info = font_mean_value::get_font_info();
-    let value_image = image_handler::get_value_image("images/last_supper.jpg", 4, font_info.hight_width_ratio);
+    let value_image = image_handler::get_value_image_from_rows("images/at_wedding.jpg", 1, font_info.hight_width_ratio);
     let mut s: String = "".to_string();
     for (i, p) in value_image.pixels().enumerate() {
         if i as u32 % value_image.width() == 0{
@@ -29,7 +29,7 @@ fn main() {
         }
         let mut val = (1.-p.0[0] as f64 / 255.);
         let pow: f64 = 1.;
-        //val = -(1.- val.powf(pow)).powf(1./pow);
+        val = (1.- val.powf(pow)).powf(1./pow);
         s.push(find_closest_match(val, &font_info))
         
     }

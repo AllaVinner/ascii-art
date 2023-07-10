@@ -14,7 +14,6 @@ fn find_closest_match(pixel: f64, font_info: &FontInfo) -> char {
     best_char
 }
 
-
 pub fn creat_ascii(font_info: font_mean_value::FontInfo, value_image: ImageBuffer) -> String {
     let mut s: String = "".to_string();
     for (i, p) in value_image.pixels().enumerate() {

@@ -1,3 +1,5 @@
+use core::num;
+
 use image::io::Reader as ImageReader;
 use image::{GenericImageView, GrayImage, ImageBuffer, Luma};
 
@@ -21,6 +23,48 @@ pub fn get_value_image(image_path: &str, sub_image_height: u32, font_scale: f64)
 
     println!("Window height: {}", window_height as u32);
     println!("Window width: {}", window_width as u32);
+
+    println!("Ascii Height: {}",( (img.height()-window_height as u32) as f64 / window_height).ceil());
+    println!("Ascii Width: {}",( (img.width()-window_width as u32) as f64 / window_width).ceil()+1.);
+
+
+    let mut value_image: GrayImage = ImageBuffer::new(num_columns as u32, num_rows as u32);
+    for (rowi, row) in (0..(img.height()-window_height as u32)).step_by(window_height as usize).enumerate() {       
+        for (coli, col) in (0..(img.width()-window_width as u32)).step_by(window_width as usize).enumerate() {
+            let sub_view: image::SubImage<&image::ImageBuffer<image::Luma<u8>, Vec<u8>>> = img.view(col, row, window_width as u32, window_height as u32);
+            let mut window_value = 0.;
+            for p in sub_view.pixels() {
+                window_value += p.2.0[0] as f64;
+            }           
+            let p = value_image.get_pixel_mut(coli as u32, rowi as u32);
+            *p = Luma([((window_value / (window_height*window_width)).floor()) as u8]);
+        }
+
+    }
+    return value_image;
+}
+
+
+pub fn get_value_image_from_rows(image_path: &str, num_rows: u32, font_scale: f64) -> GrayImage {
+    let img = ImageReader::open(image_path).unwrap().decode().unwrap().into_luma8();
+
+    let image_height = img.height() as f64;
+    let image_width = img.width() as f64;
+
+    let window_height = (image_height/num_rows as f64).ceil();
+
+    let window_width = (window_height/font_scale).floor() as f64;
+    let num_columns = (image_width / window_width).floor() as f64;
+
+    println!("Number of ASCII rows: {}", num_rows as u32);
+    println!("Number of ASCII columns: {}", num_columns as u32);
+    
+    println!("Image height: {}", image_height as u32);
+    println!("Image width: {}", image_width as u32);
+
+    println!("Window height: {}", window_height as u32);
+    println!("Window width: {}", window_width as u32);
+
 
     let mut value_image: GrayImage = ImageBuffer::new(num_columns as u32, num_rows as u32);
     for (rowi, row) in (0..(img.height()-window_height as u32)).step_by(window_height as usize).enumerate() {       
