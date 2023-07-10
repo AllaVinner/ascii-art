@@ -55,7 +55,7 @@ fn main() {
             Normalization::NONE => val,
             Normalization::POW(p) => val.powf(p),
             Normalization::SYMMETRICPOW(p) => (val.powf(p) + val.powf(1./p))/2.,
-            Normalization::DOUBLEPOW(tail, head) => (val.powf(tail) + val.powf(head))/2., 
+            Normalization::DOUBLEPOW(tail, head) => (val.powf(1./tail) + val.powf(head))/2., 
         };
         s.push(find_closest_match(val, &font_info))
         
