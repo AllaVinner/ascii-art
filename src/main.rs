@@ -4,6 +4,46 @@ mod image_example;
 mod font_mean_value;
 mod font_details;
 mod image_handler;
+use clap::{Parser, ValueEnum};
+use clap;
+
+
+#[derive(Debug, Clone, Copy)]
+enum Lighting {
+    DARK,
+    LIGHT
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Normalization {
+    NONE,
+    POW(f64),
+    SYMMETRICPOW(f64),
+    DOUBLEPOW(f64, f64),
+
+}
+
+
+#[derive(Parser, Debug)]
+#[command(author, version, 
+    about="THis is a great command", 
+    long_about = "Actually This is the greatest that ever existed")]
+struct Args {
+    #[arg()]
+    input_file: String,
+
+   #[arg(short, long, default_value_t = String::from("out.txt"))]
+   output_file: String,
+   
+   #[arg(short, long, default_value_t = 50)]
+   num_rows: u32,
+
+   #[arg(short, long, default_value_t = String::from("Default Input"))]
+   string: String,
+
+}
+
+
 
 fn find_closest_match(pixel: f64, font_info: &FontInfo) -> char {
     let mut best_value: f64 = 10000000.;
@@ -17,25 +57,13 @@ fn find_closest_match(pixel: f64, font_info: &FontInfo) -> char {
     best_char
 }
 
-enum Lighting {
-    DARK,
-    LIGHT
-}
-
-enum Normalization {
-    NONE,
-    POW(f64),
-    SYMMETRICPOW(f64),
-    DOUBLEPOW(f64, f64),
-
-}
-
 
 fn main() {
     println!("Hello, world!");
-    let input_image_path = "images/at_wedding.jpg";
-    let ascii_num_rows = 100;
-    let output_file_path = "out.txt";
+    let args: Args = Args::parse();
+    let input_image_path = &args.input_file;
+    let ascii_num_rows = args.num_rows;
+    let output_file_path = &args.output_file;
     let lighting = Lighting::DARK;
     let normalization = Normalization::NONE;
 
