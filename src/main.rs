@@ -4,7 +4,7 @@ mod image_example;
 mod font_mean_value;
 mod font_details;
 mod image_handler;
-use clap::{Parser, ValueEnum};
+use clap::{Parser};
 use clap;
 
 
@@ -20,14 +20,13 @@ enum Normalization {
     POW(f64),
     SYMMETRICPOW(f64),
     DOUBLEPOW(f64, f64),
-
 }
 
 
 #[derive(Parser, Debug)]
 #[command(author, version, 
-    about="THis is a great command", 
-    long_about = "Actually This is the greatest that ever existed")]
+    about="Creates an ASCII representation of an image.", 
+    long_about = "Converts an image file to a text file with ascii characters.")]
 struct Args {
     #[arg()]
     input_file: String,
@@ -37,9 +36,6 @@ struct Args {
    
    #[arg(short, long, default_value_t = 50)]
    num_rows: u32,
-
-   #[arg(short, long, default_value_t = String::from("Default Input"))]
-   string: String,
 
 }
 
